@@ -12,18 +12,20 @@ public class Ticket implements Serializable{
 	float sum;
 	int id;
 	boolean validated;
+	boolean winningTicket = false;
 	public Ticket(){
 		matches = new ArrayList <Match> ();
 		sum = 0;
 		stake = 1;
 		id = createID();
 	}
-
-	private static synchronized int createID() {
+	
+	
+	public synchronized int createID() {
 		return serialVersionUID++;
 	}
 
-	public void addGameToTicket(Match match){
+	public void addMatchToTicket(Match match){
 		matches.add(match);
 	}
 
@@ -51,16 +53,13 @@ public class Ticket implements Serializable{
 		return validated;
 	}
 	
-	public void validate(float sum) {
-		this.sum = sum;
+	public void validate() {
 			validated = true;
 			boolean won = true;
 			for(Match match : matches)
 				if(!match.won())
 					won = false;
-			if(won)
-				System.out.println("You won "+getWinSum());
-			else System.out.println("You lost");
+			winningTicket = won;
 	}
 
 	public int getID() {
@@ -76,6 +75,16 @@ public class Ticket implements Serializable{
 			if(m.getTeamA().equals(match.getTeamA()))
 				return true;
 		return false;
+	}
+
+	public ArrayList<Match> getMatches() {
+		return matches;
+	}
+
+
+	public void reset() {
+		matches.clear();
+		
 	}
 
 

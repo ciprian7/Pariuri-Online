@@ -7,10 +7,14 @@ import java.util.Date;
 
 public class Match implements Serializable{
 
-	String teamA, teamB, winningTeam, userTeam;
+
+	private static int serialVersionUID = 1; 
+	String teamA, teamB, winningTeam="winningTeam", userTeam ="userTeam";
 	int scoreA, scoreB, hour, minute;
-	float stakeA, stakeB;
+	float stakeA, stakeB, stakeDraw = 1;
 	boolean isOver = false;
+	int id;
+
 	
 	Date date = new Date();
 	public Match(String teamA, float stakeA, String teamB, float stakeB, int hours, int minutes){
@@ -20,7 +24,27 @@ public class Match implements Serializable{
 		this.stakeB = stakeB;
 		this.scoreA = 0;
 		this.scoreB = 0;
-		this.userTeam = "";
+		this.hour = hours;
+		this.minute = minutes;
+		date.setHours(hours);
+		date.setMinutes(minutes);
+		id = createID();
+	}
+	public synchronized int createID() {
+		return serialVersionUID++;
+	}
+	public Match(String teamA, float stakeA, String teamB, float stakeB,int scoreA, int scoreB,int hours, int minutes,String userTeam, boolean isOver){
+		this.teamA = teamA;
+		this.stakeA = stakeA;
+		this.teamB = teamB;
+		this.stakeB = stakeB;
+		this.scoreA = scoreA;
+		this.scoreB = scoreB;
+		this.hour = hours;
+		this.minute = minutes;
+		this.isOver = isOver;
+		this.userTeam = userTeam;
+		this.winningTeam = winningTeam;
 		date.setHours(hours);
 		date.setMinutes(minutes);
 	}
@@ -32,20 +56,19 @@ public class Match implements Serializable{
 	@Override
 	public String toString() {
 		if(userTeam.equals(teamA))
-		return 	"[x] "+teamA + "\t - \t " + teamB + "\n" +
-				"\t"+stakeA + "\t    \t" + stakeB + "\nDate: " + date + "\n";
+		return 	"[x] "+teamA + " \t-\t" + teamB + "\n";
 		else if(userTeam.equals(teamB)) 
-			return 	teamA + "\t - \t " + teamB +"[x]" +
-		"\t"+stakeA + "\t    \t" + stakeB + "\n" + date + "\n";
+			return teamA + "\t"  + teamB +"[x]"+"\n";
 		else
-			return 	teamA + "\t - \t " + teamB +"\n" +
-			"\t"+stakeA + "\t    \t" + stakeB+ "\nDate: " + date + "\n";
+			return 	teamA + "\t" + "[x]" + teamB +"\n";
 	}
-
+																																										
 	public float getStake() {
 		if(userTeam.equals(teamA))
 			return stakeA;
-		return stakeB;
+		else if(userTeam.equals(teamB))
+			return stakeB;
+		return stakeDraw;
 	}
 	
 	public void setTeam(String userTeam){
@@ -62,10 +85,12 @@ public class Match implements Serializable{
 	
 	public void setWinningTeam(){
 		if(scoreA > scoreB)
-			winningTeam = teamA;
+			this.winningTeam = teamA;
 		else if(scoreB > scoreA)
-			winningTeam = teamB;
-		else winningTeam = "draw";
+			this.winningTeam = teamB;
+		else this.winningTeam = "draw";
+		
+		System.out.println(this.winningTeam);
 	}
 	public boolean won() {
 		setWinningTeam();
@@ -73,11 +98,50 @@ public class Match implements Serializable{
 	}
 
 	public boolean isOver() {
+		setWinningTeam();
 		return isOver;
 	}
 	
-	public boolean equals(Match match){
-		return true;
+
+	public void setScore(int scoreA, int scoreB) {
+		this.scoreA = scoreA;
+		this.scoreB = scoreB;
+		
 	}
 
+	public int getScoreA() {
+		return scoreA;
+	}
+	public int getScoreB() {
+		return scoreB;
+	}
+
+	public float getStakeA() {
+		return stakeA;
+	}
+	
+
+	public float getStakeB() {
+		return stakeB;
+	}
+
+	public int getMinute() {
+		return minute;
+	}
+	
+	public int getHour(){
+		return hour;
+	}
+	public String getWinningTeam() {
+		return this.winningTeam;
+	}
+	
+	public String getUserTeam(){
+		return this.userTeam;
+	}
+		
+	
+	public boolean equals(Match match){
+		return this.getTeamA().equals(match.getTeamA()) && this.getTeamB().equals(match.getTeamB());
+	}
 }
